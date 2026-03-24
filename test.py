@@ -1,6 +1,6 @@
 import os, sys
 sys.path.append(os.path.expanduser('~/LCD_Module_RPI_code/RaspberryPi/python/lib'))
-import LCD_2inch
+from lib import LCD_2inch
 from PIL import Image, ImageDraw
 
 disp = LCD_2inch.LCD_2inch()
