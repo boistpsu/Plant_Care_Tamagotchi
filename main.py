@@ -18,6 +18,7 @@ System Integration
 
 import os, math
 import pygame as pg
+import lcd_output
 
 img_dir = os.path.join(os.path.dirname(__file__), "Resources", "images")
 WATER_MAX = 100
@@ -436,6 +437,8 @@ while running:
         active_care.draw(screen, tama)
 
     pg.display.flip()
+    lcd_output.send_to_lcd(screen)
+
     clock.tick(60)
 
 pg.quit()
