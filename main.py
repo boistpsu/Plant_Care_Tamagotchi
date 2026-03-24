@@ -18,9 +18,11 @@ System Integration
 
 import os, math, sys
 import pygame as pg
-import LCD_2inch
+
+sys.path.insert(0, os.path.expanduser('~/LCD_Module_RPI_code/RaspberryPi/python/lib'))
+sys.path.insert(0, os.path.expanduser('~/LCD_Module_RPI_code/RaspberryPi/python'))
+from lib import LCD_2inch
 from PIL import Image
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../LCD_Module_RPI_code/RaspberryPi/python/lib'))
 
 img_dir = os.path.join(os.path.dirname(__file__), "Resources", "images")
 WATER_MAX = 100
