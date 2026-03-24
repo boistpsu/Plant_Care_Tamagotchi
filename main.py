@@ -16,8 +16,11 @@ System Integration
 
 '''
 
-import os, math
+import os, math, sys
 import pygame as pg
+import LCD_2inch
+from PIL import Image
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../LCD_Module_RPI_code/RaspberryPi/python/lib'))
 
 img_dir = os.path.join(os.path.dirname(__file__), "Resources", "images")
 WATER_MAX = 100
@@ -59,6 +62,10 @@ def load_sound(name):
 # pg setup
 pg.init()
 screen = pg.display.set_mode((320, 240))
+
+disp = LCD_2inch.LCD_2inch()
+disp.Init()
+disp.clear()
 
 # opc update
 OPC_UPDATE = pg.USEREVENT + 1
@@ -435,7 +442,11 @@ while running:
     if active_care:
         active_care.draw(screen, tama)
 
-    pg.display.flip()
+    #pg.display.flip()
+    raw = pg.image.tostring(screen, 'RGB')
+    img = Image.frombytes('RGB', (320, 240), raw)
+    disp.ShowImage(img)
+
     clock.tick(60)
 
 pg.quit()
