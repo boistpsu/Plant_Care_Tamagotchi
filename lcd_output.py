@@ -1,7 +1,7 @@
 import os, sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'Resources', 'drivers'))
-from lib import LCD_2inch
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "Resources", "drivers", "lib"))
+import LCD_2inch.py
 from PIL import Image
 import pygame as pg
 
