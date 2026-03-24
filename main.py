@@ -62,8 +62,10 @@ def load_sound(name):
     return sound
 
 # pg setup
+os.environ['SDL_VIDEODRIVER'] = 'dummy'
+os.environ['SDL_AUDIODRIVER'] = 'dummy'
 pg.init()
-screen = pg.display.set_mode((320, 240))
+screen = pg.Surface((320, 240))
 
 disp = LCD_2inch.LCD_2inch()
 disp.Init()
