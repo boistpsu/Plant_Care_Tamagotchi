@@ -16,13 +16,8 @@ System Integration
 
 '''
 
-import os, math, sys
+import os, math
 import pygame as pg
-
-sys.path.insert(0, os.path.expanduser('~/LCD_Module_RPI_code/RaspberryPi/python/lib'))
-sys.path.insert(0, os.path.expanduser('~/LCD_Module_RPI_code/RaspberryPi/python'))
-from lib import LCD_2inch
-from PIL import Image
 
 img_dir = os.path.join(os.path.dirname(__file__), "Resources", "images")
 WATER_MAX = 100
@@ -37,10 +32,14 @@ def load_image(name, colorkey=None, scale=1):
     size = (size[0] * scale, size[1] * scale)
     image = pg.transform.scale(image, size)
 
-    if colorkey is not None:
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey, pg.RLEACCEL)
+    if image.get_masks()[3]:  # has alpha channel
+        image = image.convert_alpha()
+    else:
+        image = image.convert()
+        if colorkey is not None:
+            if colorkey == -1:
+                colorkey = image.get_at((0, 0))
+            image.set_colorkey(colorkey, pg.RLEACCEL)
 
     return image, image.get_rect()
 
@@ -58,14 +57,8 @@ def load_sound(name):
     return sound
 
 # pg setup
-os.environ['SDL_VIDEODRIVER'] = 'dummy'
-os.environ['SDL_AUDIODRIVER'] = 'dummy'
 pg.init()
-screen = pg.Surface((320, 240))
-
-disp = LCD_2inch.LCD_2inch()
-disp.Init()
-disp.clear()
+screen = pg.display.set_mode((320, 240))
 
 # opc update
 OPC_UPDATE = pg.USEREVENT + 1
@@ -73,7 +66,7 @@ pg.time.set_timer(OPC_UPDATE, 600_000)  # 600,000 ms = 10 minutes
 
 # create the display
 display = pg.Surface(screen.get_size())
-#display = display.convert()
+display = display.convert()
 display.fill((255,255,255))
 
 class Tama(pg.sprite.Sprite):
@@ -433,7 +426,7 @@ while running:
         active_care.update()
 
     screen.fill("purple")
-    #screen.blit(display, (0, 0))
+    screen.blit(display, (0, 0))
     allsprites.draw(screen)
     draw_above(screen, tama)
     draw_needs(screen, tama)
@@ -442,11 +435,7 @@ while running:
     if active_care:
         active_care.draw(screen, tama)
 
-    #pg.display.flip()
-    raw = pg.image.tostring(screen, 'RGB')
-    img = Image.frombytes('RGB', (320, 240), raw)
-    disp.ShowImage(img)
-
+    pg.display.flip()
     clock.tick(60)
 
 pg.quit()
