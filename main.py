@@ -77,7 +77,7 @@ pg.time.set_timer(OPC_UPDATE, 600_000)  # 600,000 ms = 10 minutes
 
 # create the display
 display = pg.Surface(screen.get_size())
-display = display.convert()
+#display = display.convert()
 display.fill((255,255,255))
 
 class Tama(pg.sprite.Sprite):
@@ -437,7 +437,7 @@ while running:
         active_care.update()
 
     screen.fill("purple")
-    screen.blit(display, (0, 0))
+    #screen.blit(display, (0, 0))
     allsprites.draw(screen)
     draw_above(screen, tama)
     draw_needs(screen, tama)
