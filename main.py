@@ -39,13 +39,6 @@ def load_image(name, colorkey=None, scale=1):
 
     if image.get_masks()[3]:  # has alpha channel
         image = image.convert_alpha()
-    else:
-        image = image.convert()
-        if colorkey is not None:
-            if colorkey == -1:
-                colorkey = image.get_at((0, 0))
-            image.set_colorkey(colorkey, pg.RLEACCEL)
-
     return image, image.get_rect()
 
 def load_sound(name):
