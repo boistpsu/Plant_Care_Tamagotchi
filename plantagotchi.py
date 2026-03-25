@@ -9,6 +9,10 @@ WATER_MAX = 100
 NUTR_MAX = 100
 LIGHT_MAX = 100
 
+A_BUTTON =
+B_BUTTON =
+C_BUTTON =
+
 def load_image(name, colorkey=None, scale=1):
     fullname = os.path.join(img_dir, name)
     image = pygame.image.load(fullname)
