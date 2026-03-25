@@ -9,9 +9,9 @@ WATER_MAX = 100
 NUTR_MAX = 100
 LIGHT_MAX = 100
 
-A_BUTTON =
-B_BUTTON =
-C_BUTTON =
+A_BUTTON = 1
+B_BUTTON = 1
+C_BUTTON = 1
 
 def load_image(name, colorkey=None, scale=1):
     fullname = os.path.join(img_dir, name)
