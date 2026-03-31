@@ -1,8 +1,6 @@
-from gpiozero import LED
+from gpiozero import Button
 from time import sleep
 
-led = LED(17)
-
-while True:
-    print("button 1 pressed")
-    sleep(1)
+button = Button(18)
+button.wait_for_press()
+print("The button was pressed!")
