@@ -1,17 +1,27 @@
-import os, math, random
+import os, math, random, sys
 import pygame
 from pygame.locals import *
 
 # GLOBALS
 img_dir = os.path.join(os.path.dirname(__file__), "Resources", "images")
-
 WATER_MAX = 100
 NUTR_MAX = 100
 LIGHT_MAX = 100
 
-A_BUTTON = 0
-B_BUTTON = 1
-C_BUTTON = 1
+# check for raspbi OS
+if not sys.platform == 'win32':
+    os_type = 'raspbi'
+    KEYDOWN = pygame.KEYDOWN
+    A_BUTTON = pygame.K_r
+    B_BUTTON = pygame.K_x
+    C_BUTTON = pygame.K_b
+# if windows:
+else:
+    os_type = 'win32'
+    KEYDOWN = pygame.KEYDOWN
+    A_BUTTON = pygame.K_r # navigate
+    B_BUTTON = pygame.K_x # select
+    C_BUTTON = pygame.K_b # back
 
 def load_image(name, colorkey=None, scale=1):
     fullname = os.path.join(img_dir, name)
@@ -43,7 +53,6 @@ def get_status(tama):
         return "Needs care"
     else:
         return "Doing well"
-
 
 class Tama(pygame.sprite.Sprite):
     def __init__(self, sw, sh):
@@ -82,7 +91,6 @@ class Tama(pygame.sprite.Sprite):
         self.image, self.rect = load_image(img + ".png", None, .13 * self.scale)
         self.rect.midleft = (int(self.sw * 0.06), self.sh // 2 - 20)
 
-
 class MenuScreen:
     def __init__(self, sw, sh):
         self.sw = sw
@@ -109,11 +117,11 @@ class MenuScreen:
         if not self.open:
             return None
         items_count = 3
-        if key in (pygame.K_u, pygame.K_l):
+        if key == A_BUTTON:
             self.selected = (self.selected - 1) % items_count
-        elif key in (pygame.K_d, pygame.K_r):
+        elif key == B_BUTTON:
             self.selected = (self.selected + 1) % items_count
-        elif key == pygame.K_y:
+        elif key == C_BUTTON:
             return self.selected
         return None
 
@@ -163,7 +171,6 @@ class MenuScreen:
 
             screen.blit(self.surface, (self.x, 0))
 
-
 class CareScreen:
     def __init__(self, sw, sh):
         self.sw = sw
@@ -186,7 +193,7 @@ class CareScreen:
         self.target_x = self.width
 
     def handle_key(self, key, tama):
-        if key == pygame.K_x:
+        if key == C_BUTTON:
             self.hide()
 
     def update(self):
@@ -205,7 +212,6 @@ class CareScreen:
             self.surface.fill((30, 30, 30))
             self.draw_content(self.surface, tama)
             screen.blit(self.surface, (self.x, 0))
-
 
 class WaterScreen(CareScreen):
     def __init__(self, sw, sh):
@@ -235,9 +241,8 @@ class WaterScreen(CareScreen):
 
     def handle_key(self, key, tama):
         super().handle_key(key, tama)
-        if key == pygame.K_y:
+        if key == C_BUTTON:
             tama.thirst = min(100, tama.thirst + 20)
-
 
 class GardenScreen(CareScreen):
     def __init__(self, sw, sh):
@@ -267,9 +272,8 @@ class GardenScreen(CareScreen):
 
     def handle_key(self, key, tama):
         super().handle_key(key, tama)
-        if key == pygame.K_y:
+        if key == C_BUTTON:
             tama.vitality = min(100, tama.vitality + 20)
-
 
 class JournalScreen(CareScreen):
     def __init__(self, sw, sh):
@@ -299,10 +303,9 @@ class JournalScreen(CareScreen):
 
     def handle_key(self, key, tama):
         super().handle_key(key, tama)
-        if key == pygame.K_y:
+        if key == C_BUTTON:
             from datetime import date
             self.entries.append(f"Day log: W{int(tama.thirst)} V{int(tama.vitality)} M{int(tama.mood)}")
-
 
 class App:
     def __init__(self):
@@ -319,7 +322,12 @@ class App:
 
     def on_init(self):
         pygame.init()
-        self.screen = pygame.display.set_mode(self.size)
+        # SCREEN INIT
+        if os_type == "raspbi":
+            self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(self.size)
+
         self._running = True
         self.clock = pygame.time.Clock()
 
@@ -349,13 +357,17 @@ class App:
         if event.type == pygame.QUIT:
             self._running = False
 
-        if event.type == pygame.KEYDOWN:
+        if event.type == KEYDOWN:
             if self.active_care and self.active_care.open:
                 self.active_care.handle_key(event.key, self.tama)
                 if not self.active_care.open:
                     self.active_care = None
-            elif event.key == pygame.K_x:
+            elif event.key == B_BUTTON:
                 self.menu.toggle()
+            # QUIT
+            elif event.key == pygame.K_ESCAPE:
+                self.on_cleanup()
+                sys.exit()
             else:
                 selected = self.menu.handle_key(event.key)
                 if selected is not None:
@@ -370,6 +382,7 @@ class App:
                 self.tama.mood - random.randint(0, 25),
                 self.tama.age + 1
             )
+
             self.tama.status_update()
 
     def on_loop(self):
