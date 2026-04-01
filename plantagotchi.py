@@ -8,6 +8,24 @@ WATER_MAX = 100
 NUTR_MAX = 100
 LIGHT_MAX = 100
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # check for raspbi OS
 if not sys.platform == 'win32':
     os_type = 'raspbi'
