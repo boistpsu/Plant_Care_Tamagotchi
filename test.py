@@ -4,6 +4,7 @@ button = Button(18)
 print(button)
 state = True
 while state:
-    if button.is_pressed():
+    val = button.is_pressed()
+    if val == True:
         print("button was pressed")
         state = False
